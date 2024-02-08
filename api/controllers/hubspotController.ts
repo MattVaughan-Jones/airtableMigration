@@ -3,9 +3,16 @@ import { hubspotAccessToken } from '../constants.js';
 
 const hubspotClient = new hubspot.Client({ accessToken: hubspotAccessToken });
 
+const contactObj = {
+    properties: {
+        firstname: 'apiFakeFirstName',
+        lastname: 'apiFakeLastName',
+    },
+    associations: []
+}
+
 const createContact = async () => {
-    const allContacts = await hubspotClient.crm.contacts.getAll();
-    console.log(allContacts);
+    const createContactResponse = await hubspotClient.crm.contacts.basicApi.create(contactObj)
 }
 
 export const hubspotController = {
