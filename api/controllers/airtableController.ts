@@ -33,6 +33,6 @@ const listRecords = () => {
     });
 };
 
-export const airtable = {
+export const airtableController = {
     listRecords
 };
