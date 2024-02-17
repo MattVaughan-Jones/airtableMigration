@@ -1,6 +1,10 @@
-import dotenv from 'dotenv';
-import { airtable } from './controllers/airtableController.js';
+import { airtableController } from './controllers/airtableController.js';
+import { hubspotController } from './controllers/hubspotController.js';
 
-dotenv.config();
+const main = async () => {
+    let airtableData = await airtableController.listRecords();
+    hubspotController.createContact(airtableData);
+}
 
-airtable.listRecords();
+console.log('======call main==========');
+main();

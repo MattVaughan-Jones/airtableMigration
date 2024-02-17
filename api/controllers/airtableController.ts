@@ -9,25 +9,34 @@ import { airtableAccesstoken,
 const base = new Airtable({apiKey: airtableAccesstoken}).base(airtableSalesBaseID);
 
 const listRecords = () => {
-    base(airtableSalesUpdatedLeadsViewID).select({
-        maxRecords: 2,
-        view: "ALL"
-    }).eachPage(function page(records, fetchNextPage) {
-        // This function (`page`) will get called for each page of records.
-    
-        records.forEach(function(record) {
-            console.log(record);
-        });
-    
-        // To fetch the next page of records, call `fetchNextPage`.
-        // If there are more records, `page` will get called again.
-        // If there are no more records, `done` will get called.
-        fetchNextPage();
-    
-        }, function done(err) {
-        if (err) { console.error(err); return; }
-    });
-};
+    return new Promise((resolve, reject) => {
+        let results: any = [];
+
+        base(airtableSalesUpdatedLeadsViewID).select({
+            maxRecords: 2,
+            view: "ALL"
+        }).eachPage(
+            function page(records, fetchNextPage) {
+                // This function (`page`) will get called for each page of records.
+                records.forEach(function(record) {
+                    results.push(record.fields);
+                });
+            
+                // To fetch the next page of records, call `fetchNextPage`.
+                // If there are more records, `page` will get called again.
+                // If there are no more records, `done` will get called.
+                fetchNextPage();
+            },
+            function done(err) {
+                if (err) { 
+                    reject(err);
+                } else {
+                    resolve(results);
+                }
+            }
+        )
+    }    
+)};
 
 export const airtableController = {
     listRecords
