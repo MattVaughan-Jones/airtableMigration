@@ -1,10 +1,15 @@
 import { airtableController } from './controllers/airtableController.js';
 import { hubspotController } from './controllers/hubspotController.js';
+import { convertAirtableToHubspot } from './controllers/convertAirtableToHubspotController.js';
 
 const main = async () => {
-    let airtableData = await airtableController.listRecords();
-    hubspotController.createContact(airtableData);
+    try {
+        let airtableData = await airtableController.getRecords();
+        convertAirtableToHubspot(airtableData);
+        // hubspotController.createRecord(airtableData);
+    } catch (e) {
+        console.log(e);
+    }
 }
 
-console.log('======call main==========');
 main();

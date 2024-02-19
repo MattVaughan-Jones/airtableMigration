@@ -3,7 +3,7 @@ import { hubspotAccessToken } from '../constants.js';
 
 const hubspotClient = new hubspot.Client({ accessToken: hubspotAccessToken });
 
-const createContact = async (airtableData: any) => {
+const createRecord = async (airtableData: any) => {
 
     console.log(airtableData);
 
@@ -253,5 +253,5 @@ const createContact = async (airtableData: any) => {
 };
 
 export const hubspotController = {
-    createContact
+    createRecord
 }

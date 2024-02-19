@@ -8,7 +8,7 @@ import { airtableAccesstoken,
 
 const base = new Airtable({apiKey: airtableAccesstoken}).base(airtableSalesBaseID);
 
-const listRecords = () => {
+const getRecords = () => {
     return new Promise((resolve, reject) => {
         let results: any = [];
 
@@ -38,6 +38,14 @@ const listRecords = () => {
     }    
 )};
 
+const getTableMetadata = () => {
+    return base(airtableSalesUpdatedLeadsViewID).select({
+            maxRecords: 2,
+            view: "ALL"
+        })
+}
+
 export const airtableController = {
-    listRecords
+    getRecords,
+    getTableMetadata
 };
