@@ -30,34 +30,11 @@ type ConvertedRecord = {
     leadSource?: string,
     soldDate?: string,
     createDate?: string,
+    inspectionDate?: string,
+    priority?: string,
 }
     
 const convertAirtableToHubspot = (airtableData: any) => {
-    // let arr1 = [
-    //     {
-    //       id: 'attg3jsNMkzA1WyfS',
-    //       url: 'https://v5.airtableusercontent.com/v3/u/26/26/1708840800000/vbJVFxOFWMKDKcxubnwLHQ/ff-0SAt1tLHXJ-DJwVzxZY8lulm3zcwgHMxcUOYdeUzcZhL_G0Tevqj3Md6-DiPJUg2M9zoZjnq5vNUnzEDYMRvhym1por4rZIWOqn6CCCJRHeklaPk5Y0P1w8d2ND37-NOz342hgB4_YNuI4JCAYlSIvvM2wvBZvblAzp_S9tU/417Q-vPFGmbyXe3EAbA1C0i82qf8VJQUt-V4gnt6c6E',
-    //       filename: 'Hubspot invoice-13190662-0.pdf',
-    //       size: 67061,
-    //       type: 'application/pdf',
-    //       thumbnails: { small: [Object], large: [Object] }
-    //     }
-    // ];
-    // let arr2 = [
-    //     {
-    //       id: 'attJ9TxoyuljJkC1g',
-    //       width: 1009,
-    //       height: 126,
-    //       url: 'https://v5.airtableusercontent.com/v3/u/26/26/1708840800000/X4lz-MkOZsyVVrh-ZhmGpg/4T0lheT21pYCCK2ZZmVESbd5S91xVvka_94JCNWAk3G_6-F8O8uMfnBmFz5nmoePeywFwwZuD8c0DHWr1PYs8T5Igvn7xNJ5-vIn2OoQFkQGS8wE1LW9cfSpzXt0Vm6Mw7G-Gjj6AJcT9nQUB4XIIRdv4yNHKsw_mOhllc18WjuM18AVx4l2GurkPtlgz93z/x0WLyXmTpAwvUsa1zzcDMgmna60wb-MBs5fJY5LdA54',
-    //       filename: 'Screen Shot 2021-10-05 at 10.39.15 am (1).png',
-    //       size: 116195,
-    //       type: 'image/png',
-    //       thumbnails: { small: [Object], large: [Object], full: [Object] }
-    //     }
-    // ]
-
-    // let testconcat = arr1.concat(arr2);
-
     let convertedData: ConvertedRecord[] = [];
 
     airtableData.forEach((el: any) => {
@@ -206,6 +183,22 @@ const convertAirtableToHubspot = (airtableData: any) => {
         //         convertedRecord.attachments = el['Quote'];
         //     }
         // }
+        // if (convertSiteInspectionCompleted(el['Site Inspection Completed'])) convertedRecord.inspectionDate = convertSiteInspectionCompleted(el['Site Inspection Completed']);
+        // if (convertPriorityResponse(el['Priority Response'])) convertedRecord.priority = convertPriorityResponse(el['Priority Response']);
+        // if (el['Photos and documents']) {
+        //     if (convertedRecord.attachments) {
+        //         convertedRecord.attachments = [...convertedRecord.attachments, ...el['Photos and documents']];
+        //     } else {
+        //         convertedRecord.attachments = el['Photos and documents'];
+        //     }
+        // }
+        if (el['Approved SPA ']) {
+            if (convertedRecord.attachments) {
+                convertedRecord.attachments = [...convertedRecord.attachments, ...el['Approved SPA ']];
+            } else {
+                convertedRecord.attachments = el['Approved SPA '];
+            }
+        }
 
         convertedData.push(convertedRecord);
     })
@@ -453,6 +446,21 @@ const convertAddedDate = (airtableAddedDate: string): string | undefined => {
         return adjustedDate;
     }
     return undefined;
+}
+
+const convertSiteInspectionCompleted = (airtableSiteInspectionCompleted: string): string | undefined => {
+    const adjustedDate = airtableSiteInspectionCompleted + 'T00:00:00.000Z'
+    if (dateRegex.test(adjustedDate)) {
+        return adjustedDate;
+    }
+    return undefined;
+}
+
+const convertPriorityResponse = (airtablePriorityResponse: string): string | undefined => {
+    if (airtablePriorityResponse == 'Low') return 'low';
+    else if (airtablePriorityResponse == 'Medium') return 'medium';
+    else if (airtablePriorityResponse == 'High' || airtablePriorityResponse == 'Urgent') return 'high';
+    else return undefined;
 }
 
 export {

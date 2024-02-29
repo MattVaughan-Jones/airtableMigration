@@ -1,0 +1,877 @@
+mattvaughan-jones@Memoriess-MacBook-Pro airtableMigration % node inspect dist/index.js
+< Debugger listening on ws://127.0.0.1:9229/7d72a4f5-0a90-4522-812d-32b5b5b04178
+< For help, see: https://nodejs.org/en/docs/inspector
+< 
+< Debugger attached.
+< 
+ ok
+Break on start in dist/constants.js:1
+> 1 import dotenv from 'dotenv';
+  2 dotenv.config();
+  3 export const airtableAccesstoken = process.env.AIRTABLE_PERSONAL_ACCESS_TOKEN;
+debug> n
+break in dist/constants.js:2
+  1 import dotenv from 'dotenv';
+> 2 dotenv.config();
+  3 export const airtableAccesstoken = process.env.AIRTABLE_PERSONAL_ACCESS_TOKEN;
+  4 export const airtableSalesBaseID = process.env.AIRTABLE_SALES_BASE_ID;
+debug> n
+break in dist/constants.js:3
+  1 import dotenv from 'dotenv';
+  2 dotenv.config();
+> 3 export const airtableAccesstoken = process.env.AIRTABLE_PERSONAL_ACCESS_TOKEN;
+  4 export const airtableSalesBaseID = process.env.AIRTABLE_SALES_BASE_ID;
+  5 export const airtableSalesUpdatedLeadsViewID = process.env.AIRTABLE_SALES_UPDATED_LEADS_VIEW_ID;
+debug> n
+break in dist/constants.js:4
+  2 dotenv.config();
+  3 export const airtableAccesstoken = process.env.AIRTABLE_PERSONAL_ACCESS_TOKEN;
+> 4 export const airtableSalesBaseID = process.env.AIRTABLE_SALES_BASE_ID;
+  5 export const airtableSalesUpdatedLeadsViewID = process.env.AIRTABLE_SALES_UPDATED_LEADS_VIEW_ID;
+  6 export const hubspotAccessToken = process.env.HUBSPOT_ACCESS_TOKEN;
+debug> n
+break in dist/constants.js:5
+  3 export const airtableAccesstoken = process.env.AIRTABLE_PERSONAL_ACCESS_TOKEN;
+  4 export const airtableSalesBaseID = process.env.AIRTABLE_SALES_BASE_ID;
+> 5 export const airtableSalesUpdatedLeadsViewID = process.env.AIRTABLE_SALES_UPDATED_LEADS_VIEW_ID;
+  6 export const hubspotAccessToken = process.env.HUBSPOT_ACCESS_TOKEN;
+  7 
+debug> n
+break in dist/constants.js:6
+  4 export const airtableSalesBaseID = process.env.AIRTABLE_SALES_BASE_ID;
+  5 export const airtableSalesUpdatedLeadsViewID = process.env.AIRTABLE_SALES_UPDATED_LEADS_VIEW_ID;
+> 6 export const hubspotAccessToken = process.env.HUBSPOT_ACCESS_TOKEN;
+  7 
+debug> n
+break in dist/constants.js:7
+  5 export const airtableSalesUpdatedLeadsViewID = process.env.AIRTABLE_SALES_UPDATED_LEADS_VIEW_ID;
+  6 export const hubspotAccessToken = process.env.HUBSPOT_ACCESS_TOKEN;
+> 7 
+debug> n
+break in dist/controllers/airtableController.js:5
+  3 import { airtableAccesstoken } from '../constants.js';
+  4 // const base = new Airtable({apiKey: airtableAccesstoken}).base(airtableSalesBaseID);
+> 5 const getRecord = () => {
+  6     return new Promise(async (resolve, reject) => {
+  7         try {
+debug> n
+break in dist/controllers/airtableController.js:52
+ 50 //         })
+ 51 // }
+>52 export const airtableController = {
+ 53     getRecord,
+ 54     // getRecords,
+debug> n
+break in dist/controllers/airtableController.js:57
+ 55     // getTableMetadata
+ 56 };
+>57 
+debug> n
+break in dist/index.js:5
+  3 // import { convertAirtableToHubspot } from './controllers/convertAirtableToHubspotController.js';
+  4 //TODO - go through all TODOs
+> 5 debugger;
+  6 const main = async () => {
+  7     try {
+debug> n
+break in dist/index.js:6
+  4 //TODO - go through all TODOs
+  5 debugger;
+> 6 const main = async () => {
+  7     try {
+  8         // let airtableData = await airtableController.getRecords();
+debug> n
+break in dist/index.js:19
+ 17     }
+ 18 };
+>19 main();
+ 20 
+debug> n
+break in dist/index.js:20
+ 18 };
+ 19 main();
+>20 
+debug> n
+break in node:internal/modules/esm/module_job:242
+ 240       throw e;
+ 241     }
+>242     return { __proto__: null, module: this.module };
+ 243   }
+ 244 }
+debug> n
+break in node:internal/modules/esm/module_job:242
+ 240       throw e;
+ 241     }
+>242     return { __proto__: null, module: this.module };
+ 243   }
+ 244 }
+debug> n
+break in node:internal/modules/esm/loader:317
+ 315     const moduleJob = await this.getModuleJob(specifier, parentURL, importAssertions);
+ 316     const { module } = await moduleJob.run();
+>317     return module.getNamespace();
+ 318   }
+ 319 
+debug> n
+break in node:internal/modules/esm/loader:317
+ 315     const moduleJob = await this.getModuleJob(specifier, parentURL, importAssertions);
+ 316     const { module } = await moduleJob.run();
+>317     return module.getNamespace();
+ 318   }
+ 319 
+debug> n
+break in node:internal/process/esm_loader:45
+ 43       );
+ 44     }
+>45   },
+ 46 };
+ 47 
+debug> n
+break in node:internal/modules/run_main:68
+ 66     return await promise;
+ 67   } finally {
+>68     process.off('exit', handleProcessExit);
+ 69   }
+ 70 }
+debug> n
+< TypeError: fetch failed
+<     at Object.fetch (node:internal/deps/undici/undici:11372:11)
+<     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+<     at async file:///Users/mattvaughan-jones/Projects/winki/airtableMigration/dist/controllers/airtableController.js:8:36 {
+<   cause: _ConnectTimeoutError: Connect Timeout Error
+<       at onConnectTimeout (node:internal/deps/undici/undici:6616:28)
+<       at node:internal/deps/undici/undici:6574:50
+<       at Immediate._onImmediate (node:internal/deps/undici/undici:6605:13)
+<       at process.processImmediate (node:internal/timers:478:21) {
+<     code: 'UND_ERR_CONNECT_TIMEOUT'
+<   }
+< }
+< 
+break in node:internal/process/task_queues:96
+ 94     }
+ 95     runMicrotasks();
+>96   } while (!queue.isEmpty() || processPromiseRejections());
+ 97   setHasTickScheduled(false);
+ 98   setHasRejectionToWarn(false);
+debug> n
+break in node:internal/process/task_queues:96
+ 94     }
+ 95     runMicrotasks();
+>96   } while (!queue.isEmpty() || processPromiseRejections());
+ 97   setHasTickScheduled(false);
+ 98   setHasRejectionToWarn(false);
+debug> n
+break in node:internal/process/task_queues:70
+ 68   let tock;
+ 69   do {
+>70     while ((tock = queue.shift()) !== null) {
+ 71       const asyncId = tock[async_id_symbol];
+ 72       emitBefore(asyncId, tock[trigger_async_id_symbol], tock);
+debug> n
+break in node:internal/process/task_queues:70
+ 68   let tock;
+ 69   do {
+>70     while ((tock = queue.shift()) !== null) {
+ 71       const asyncId = tock[async_id_symbol];
+ 72       emitBefore(asyncId, tock[trigger_async_id_symbol], tock);
+debug> n
+break in node:internal/process/task_queues:71
+ 69   do {
+ 70     while ((tock = queue.shift()) !== null) {
+>71       const asyncId = tock[async_id_symbol];
+ 72       emitBefore(asyncId, tock[trigger_async_id_symbol], tock);
+ 73 
+debug> n
+break in node:internal/process/task_queues:72
+ 70     while ((tock = queue.shift()) !== null) {
+ 71       const asyncId = tock[async_id_symbol];
+>72       emitBefore(asyncId, tock[trigger_async_id_symbol], tock);
+ 73 
+ 74       try {
+debug> n
+break in node:internal/process/task_queues:75
+ 73 
+ 74       try {
+>75         const callback = tock.callback;
+ 76         if (tock.args === undefined) {
+ 77           callback();
+debug> n
+break in node:internal/process/task_queues:76
+ 74       try {
+ 75         const callback = tock.callback;
+>76         if (tock.args === undefined) {
+ 77           callback();
+ 78         } else {
+debug> n
+break in node:internal/process/task_queues:79
+ 77           callback();
+ 78         } else {
+>79           const args = tock.args;
+ 80           switch (args.length) {
+ 81             case 1: callback(args[0]); break;
+debug> n
+break in node:internal/process/task_queues:80
+ 78         } else {
+ 79           const args = tock.args;
+>80           switch (args.length) {
+ 81             case 1: callback(args[0]); break;
+ 82             case 2: callback(args[0], args[1]); break;
+debug> n
+break in node:internal/process/task_queues:81
+ 79           const args = tock.args;
+ 80           switch (args.length) {
+>81             case 1: callback(args[0]); break;
+ 82             case 2: callback(args[0], args[1]); break;
+ 83             case 3: callback(args[0], args[1], args[2]); break;
+debug> n
+break in node:internal/process/task_queues:81
+ 79           const args = tock.args;
+ 80           switch (args.length) {
+>81             case 1: callback(args[0]); break;
+ 82             case 2: callback(args[0], args[1]); break;
+ 83             case 3: callback(args[0], args[1], args[2]); break;
+debug> n
+break in node:internal/process/task_queues:89
+ 87         }
+ 88       } finally {
+>89         if (destroyHooksExist())
+ 90           emitDestroy(asyncId);
+ 91       }
+debug> n
+break in node:internal/process/task_queues:93
+ 91       }
+ 92 
+>93       emitAfter(asyncId);
+ 94     }
+ 95     runMicrotasks();
+debug> n
+break in node:internal/process/task_queues:70
+ 68   let tock;
+ 69   do {
+>70     while ((tock = queue.shift()) !== null) {
+ 71       const asyncId = tock[async_id_symbol];
+ 72       emitBefore(asyncId, tock[trigger_async_id_symbol], tock);
+debug> n
+break in node:internal/process/task_queues:70
+ 68   let tock;
+ 69   do {
+>70     while ((tock = queue.shift()) !== null) {
+ 71       const asyncId = tock[async_id_symbol];
+ 72       emitBefore(asyncId, tock[trigger_async_id_symbol], tock);
+debug> n
+break in node:internal/process/task_queues:95
+ 93       emitAfter(asyncId);
+ 94     }
+>95     runMicrotasks();
+ 96   } while (!queue.isEmpty() || processPromiseRejections());
+ 97   setHasTickScheduled(false);
+debug> n
+break in node:internal/process/task_queues:96
+ 94     }
+ 95     runMicrotasks();
+>96   } while (!queue.isEmpty() || processPromiseRejections());
+ 97   setHasTickScheduled(false);
+ 98   setHasRejectionToWarn(false);
+debug> n
+break in node:internal/process/task_queues:96
+ 94     }
+ 95     runMicrotasks();
+>96   } while (!queue.isEmpty() || processPromiseRejections());
+ 97   setHasTickScheduled(false);
+ 98   setHasRejectionToWarn(false);
+debug> n
+break in node:internal/process/task_queues:96
+ 94     }
+ 95     runMicrotasks();
+>96   } while (!queue.isEmpty() || processPromiseRejections());
+ 97   setHasTickScheduled(false);
+ 98   setHasRejectionToWarn(false);
+debug> n
+break in node:internal/process/task_queues:97
+ 95     runMicrotasks();
+ 96   } while (!queue.isEmpty() || processPromiseRejections());
+>97   setHasTickScheduled(false);
+ 98   setHasRejectionToWarn(false);
+ 99 }
+debug> n
+break in node:internal/process/task_queues:98
+  96   } while (!queue.isEmpty() || processPromiseRejections());
+  97   setHasTickScheduled(false);
+> 98   setHasRejectionToWarn(false);
+  99 }
+ 100 
+debug> n
+break in node:internal/process/task_queues:99
+  97   setHasTickScheduled(false);
+  98   setHasRejectionToWarn(false);
+> 99 }
+ 100 
+ 101 // `nextTick()` will not enqueue any callback when the process is about to
+debug> n
+break in node:net:1648
+ 1646 
+ 1647 function afterConnectMultiple(context, current, status, handle, req, readable, writable) {
+>1648   debug('connect/multiple: connection attempt to %s:%s completed with status %s', req.address, req.port, status);
+ 1649 
+ 1650   // Make sure another connection is not spawned
+debug> n
+break in node:net:1651
+ 1649 
+ 1650   // Make sure another connection is not spawned
+>1651   clearTimeout(context[kTimeout]);
+ 1652 
+ 1653   // One of the connection has completed and correctly dispatched but after timeout, ignore this one
+debug> n
+break in node:net:1654
+ 1652 
+ 1653   // One of the connection has completed and correctly dispatched but after timeout, ignore this one
+>1654   if (status === 0 && current !== context.current - 1) {
+ 1655     debug('connect/multiple: ignoring successful but timedout connection to %s:%s', req.address, req.port);
+ 1656     handle.close();
+debug> n
+break in node:net:1660
+ 1658   }
+ 1659 
+>1660   const self = context.socket;
+ 1661 
+ 1662   // Some error occurred, add to the list of exceptions
+debug> n
+break in node:net:1663
+ 1661 
+ 1662   // Some error occurred, add to the list of exceptions
+>1663   if (status !== 0) {
+ 1664     ArrayPrototypePush(context.errors, createConnectionError(req, status));
+ 1665 
+debug> n
+break in node:net:1664
+ 1662   // Some error occurred, add to the list of exceptions
+ 1663   if (status !== 0) {
+>1664     ArrayPrototypePush(context.errors, createConnectionError(req, status));
+ 1665 
+ 1666     // Try the next address
+debug> n
+break in node:net:1667
+ 1665 
+ 1666     // Try the next address
+>1667     internalConnectMultiple(context, status === UV_ECANCELED);
+ 1668     return;
+ 1669   }
+debug> n
+break in node:net:1668
+ 1666     // Try the next address
+ 1667     internalConnectMultiple(context, status === UV_ECANCELED);
+>1668     return;
+ 1669   }
+ 1670 
+debug> n
+break in node:net:1668
+ 1666     // Try the next address
+ 1667     internalConnectMultiple(context, status === UV_ECANCELED);
+>1668     return;
+ 1669   }
+ 1670 
+debug> n
+break in node:_tls_wrap:649
+ 647   // that may self-reference TLSWrap, leading to leak
+ 648   const done = () => {
+>649     if (ssl) {
+ 650       ssl.destroySSL();
+ 651       if (ssl._secureContext.singleUse) {
+debug> n
+break in node:_tls_wrap:650
+ 648   const done = () => {
+ 649     if (ssl) {
+>650       ssl.destroySSL();
+ 651       if (ssl._secureContext.singleUse) {
+ 652         ssl._secureContext.context.close();
+debug> n
+break in node:_tls_wrap:651
+ 649     if (ssl) {
+ 650       ssl.destroySSL();
+>651       if (ssl._secureContext.singleUse) {
+ 652         ssl._secureContext.context.close();
+ 653         ssl._secureContext.context = null;
+debug> n
+break in node:_tls_wrap:656
+ 654       }
+ 655     }
+>656     if (cb)
+ 657       cb();
+ 658   };
+debug> n
+break in node:_tls_wrap:657
+ 655     }
+ 656     if (cb)
+>657       cb();
+ 658   };
+ 659 
+debug> n
+break in node:_tls_wrap:658
+ 656     if (cb)
+ 657       cb();
+>658   };
+ 659 
+ 660   if (this._parentWrap && this._parentWrap._handle === this._parent) {
+debug> n
+break in node:internal/timers:500
+ 498 
+ 499   function processTimers(now) {
+>500     debug('process timer lists %d', now);
+ 501     nextExpiry = Infinity;
+ 502 
+debug> n
+break in node:internal/timers:501
+ 499   function processTimers(now) {
+ 500     debug('process timer lists %d', now);
+>501     nextExpiry = Infinity;
+ 502 
+ 503     let list;
+debug> 
+break in node:internal/timers:503
+ 501     nextExpiry = Infinity;
+ 502 
+>503     let list;
+ 504     let ranAtLeastOneList = false;
+ 505     while ((list = timerListQueue.peek()) != null) {
+debug> n
+break in node:internal/timers:504
+ 502 
+ 503     let list;
+>504     let ranAtLeastOneList = false;
+ 505     while ((list = timerListQueue.peek()) != null) {
+ 506       if (list.expiry > now) {
+debug> n
+break in node:internal/timers:505
+ 503     let list;
+ 504     let ranAtLeastOneList = false;
+>505     while ((list = timerListQueue.peek()) != null) {
+ 506       if (list.expiry > now) {
+ 507         nextExpiry = list.expiry;
+debug> n
+break in node:internal/timers:505
+ 503     let list;
+ 504     let ranAtLeastOneList = false;
+>505     while ((list = timerListQueue.peek()) != null) {
+ 506       if (list.expiry > now) {
+ 507         nextExpiry = list.expiry;
+debug> n
+break in node:internal/timers:516
+ 514       listOnTimeout(list, now);
+ 515     }
+>516     return 0;
+ 517   }
+ 518 
+debug> n
+break in node:internal/timers:516
+ 514       listOnTimeout(list, now);
+ 515     }
+>516     return 0;
+ 517   }
+ 518 
+debug> n
+break in node:internal/timers:434
+ 432 
+ 433   function processImmediate() {
+>434     const queue = outstandingQueue.head !== null ?
+ 435       outstandingQueue : immediateQueue;
+ 436     let immediate = queue.head;
+debug> n
+break in node:internal/timers:436
+ 434     const queue = outstandingQueue.head !== null ?
+ 435       outstandingQueue : immediateQueue;
+>436     let immediate = queue.head;
+ 437 
+ 438     // Clear the linked list early in case new `setImmediate()`
+debug> n
+break in node:internal/timers:440
+ 438     // Clear the linked list early in case new `setImmediate()`
+ 439     // calls occur while immediate callbacks are executed
+>440     if (queue !== outstandingQueue) {
+ 441       queue.head = queue.tail = null;
+ 442       immediateInfo[kHasOutstanding] = 1;
+debug> n
+break in node:internal/timers:441
+ 439     // calls occur while immediate callbacks are executed
+ 440     if (queue !== outstandingQueue) {
+>441       queue.head = queue.tail = null;
+ 442       immediateInfo[kHasOutstanding] = 1;
+ 443     }
+debug> n
+break in node:internal/timers:442
+ 440     if (queue !== outstandingQueue) {
+ 441       queue.head = queue.tail = null;
+>442       immediateInfo[kHasOutstanding] = 1;
+ 443     }
+ 444 
+debug> n
+break in node:internal/timers:445
+ 443     }
+ 444 
+>445     let prevImmediate;
+ 446     let ranAtLeastOneImmediate = false;
+ 447     while (immediate !== null) {
+debug> n
+break in node:internal/timers:446
+ 444 
+ 445     let prevImmediate;
+>446     let ranAtLeastOneImmediate = false;
+ 447     while (immediate !== null) {
+ 448       if (ranAtLeastOneImmediate)
+debug> n
+break in node:internal/timers:447
+ 445     let prevImmediate;
+ 446     let ranAtLeastOneImmediate = false;
+>447     while (immediate !== null) {
+ 448       if (ranAtLeastOneImmediate)
+ 449         runNextTicks();
+debug> n
+break in node:internal/timers:448
+ 446     let ranAtLeastOneImmediate = false;
+ 447     while (immediate !== null) {
+>448       if (ranAtLeastOneImmediate)
+ 449         runNextTicks();
+ 450       else
+debug> n
+break in node:internal/timers:451
+ 449         runNextTicks();
+ 450       else
+>451         ranAtLeastOneImmediate = true;
+ 452 
+ 453       // It's possible for this current Immediate to be cleared while executing
+debug> n
+break in node:internal/timers:456
+ 454       // the next tick queue above, which means we need to use the previous
+ 455       // Immediate's _idleNext which is guaranteed to not have been cleared.
+>456       if (immediate._destroyed) {
+ 457         outstandingQueue.head = immediate = prevImmediate._idleNext;
+ 458         continue;
+debug> n
+break in node:internal/timers:463
+ 461       // TODO(RaisinTen): Destroy and unref the Immediate after _onImmediate()
+ 462       // gets executed, just like how Timeouts work.
+>463       immediate._destroyed = true;
+ 464 
+ 465       immediateInfo[kCount]--;
+debug> n
+break in node:internal/timers:465
+ 463       immediate._destroyed = true;
+ 464 
+>465       immediateInfo[kCount]--;
+ 466       if (immediate[kRefed])
+ 467         immediateInfo[kRefCount]--;
+debug> n
+break in node:internal/timers:466
+ 464 
+ 465       immediateInfo[kCount]--;
+>466       if (immediate[kRefed])
+ 467         immediateInfo[kRefCount]--;
+ 468       immediate[kRefed] = null;
+debug> n
+break in node:internal/timers:467
+ 465       immediateInfo[kCount]--;
+ 466       if (immediate[kRefed])
+>467         immediateInfo[kRefCount]--;
+ 468       immediate[kRefed] = null;
+ 469 
+debug> n
+break in node:internal/timers:468
+ 466       if (immediate[kRefed])
+ 467         immediateInfo[kRefCount]--;
+>468       immediate[kRefed] = null;
+ 469 
+ 470       prevImmediate = immediate;
+debug> n
+break in node:internal/timers:470
+ 468       immediate[kRefed] = null;
+ 469 
+>470       prevImmediate = immediate;
+ 471 
+ 472       const asyncId = immediate[async_id_symbol];
+debug> n
+break in node:internal/timers:472
+ 470       prevImmediate = immediate;
+ 471 
+>472       const asyncId = immediate[async_id_symbol];
+ 473       emitBefore(asyncId, immediate[trigger_async_id_symbol], immediate);
+ 474 
+debug> n
+break in node:internal/timers:473
+ 471 
+ 472       const asyncId = immediate[async_id_symbol];
+>473       emitBefore(asyncId, immediate[trigger_async_id_symbol], immediate);
+ 474 
+ 475       try {
+debug> n
+break in node:internal/timers:476
+ 474 
+ 475       try {
+>476         const argv = immediate._argv;
+ 477         if (!argv)
+ 478           immediate._onImmediate();
+debug> n
+break in node:internal/timers:477
+ 475       try {
+ 476         const argv = immediate._argv;
+>477         if (!argv)
+ 478           immediate._onImmediate();
+ 479         else
+debug> n
+break in node:internal/timers:480
+ 478           immediate._onImmediate();
+ 479         else
+>480           immediate._onImmediate(...argv);
+ 481       } finally {
+ 482         immediate._onImmediate = null;
+debug> n
+break in node:internal/timers:482
+ 480           immediate._onImmediate(...argv);
+ 481       } finally {
+>482         immediate._onImmediate = null;
+ 483 
+ 484         if (destroyHooksExist())
+debug> n
+break in node:internal/timers:484
+ 482         immediate._onImmediate = null;
+ 483 
+>484         if (destroyHooksExist())
+ 485           emitDestroy(asyncId);
+ 486 
+debug> n
+break in node:internal/timers:487
+ 485           emitDestroy(asyncId);
+ 486 
+>487         outstandingQueue.head = immediate = immediate._idleNext;
+ 488       }
+ 489 
+debug> n
+break in node:internal/timers:490
+ 488       }
+ 489 
+>490       emitAfter(asyncId);
+ 491     }
+ 492 
+debug> n
+break in node:internal/timers:447
+ 445     let prevImmediate;
+ 446     let ranAtLeastOneImmediate = false;
+>447     while (immediate !== null) {
+ 448       if (ranAtLeastOneImmediate)
+ 449         runNextTicks();
+debug> n
+break in node:internal/timers:493
+ 491     }
+ 492 
+>493     if (queue === outstandingQueue)
+ 494       outstandingQueue.head = null;
+ 495     immediateInfo[kHasOutstanding] = 0;
+debug> n
+break in node:internal/timers:495
+ 493     if (queue === outstandingQueue)
+ 494       outstandingQueue.head = null;
+>495     immediateInfo[kHasOutstanding] = 0;
+ 496   }
+ 497 
+debug> n
+break in node:internal/timers:496
+ 494       outstandingQueue.head = null;
+ 495     immediateInfo[kHasOutstanding] = 0;
+>496   }
+ 497 
+ 498 
+debug> n
+break in node:events:462
+ 460  */
+ 461 EventEmitter.prototype.emit = function emit(type, ...args) {
+>462   let doError = (type === 'error');
+ 463 
+ 464   const events = this._events;
+debug> n
+break in node:events:464
+ 462   let doError = (type === 'error');
+ 463 
+>464   const events = this._events;
+ 465   if (events !== undefined) {
+ 466     if (doError && events[kErrorMonitor] !== undefined)
+debug> n
+break in node:events:465
+ 463 
+ 464   const events = this._events;
+>465   if (events !== undefined) {
+ 466     if (doError && events[kErrorMonitor] !== undefined)
+ 467       this.emit(kErrorMonitor, ...args);
+debug> n
+break in node:events:466
+ 464   const events = this._events;
+ 465   if (events !== undefined) {
+>466     if (doError && events[kErrorMonitor] !== undefined)
+ 467       this.emit(kErrorMonitor, ...args);
+ 468     doError = (doError && events.error === undefined);
+debug> nn
+REPL100:1
+nn
+^
+
+Uncaught ReferenceError: nn is not defined
+    at REPL100:1:1
+    at Script.runInContext (node:vm:134:12)
+    at Object.runInContext (node:vm:280:6)
+    at REPLServer.controlEval (node:internal/debugger/inspect_repl:618:25)
+    at bound (node:domain:432:15)
+    at REPLServer.runBound [as eval] (node:domain:443:12)
+    at REPLServer.onLine (node:repl:924:10)
+    at REPLServer.emit (node:events:514:28)
+    at REPLServer.emit (node:domain:488:12)
+    at [_onLine] [as _onLine] (node:internal/readline/interface:416:12)
+debug> n
+break in node:events:468
+ 466     if (doError && events[kErrorMonitor] !== undefined)
+ 467       this.emit(kErrorMonitor, ...args);
+>468     doError = (doError && events.error === undefined);
+ 469   } else if (!doError)
+ 470     return false;
+debug> n
+break in node:events:473
+ 471 
+ 472   // If there is no 'error' event listener then throw.
+>473   if (doError) {
+ 474     let er;
+ 475     if (args.length > 0)
+debug> n
+break in node:events:508
+ 506   }
+ 507 
+>508   const handler = events[type];
+ 509 
+ 510   if (handler === undefined)
+debug> n
+break in node:events:510
+ 508   const handler = events[type];
+ 509 
+>510   if (handler === undefined)
+ 511     return false;
+ 512 
+debug> n
+break in node:events:511
+ 509 
+ 510   if (handler === undefined)
+>511     return false;
+ 512 
+ 513   if (typeof handler === 'function') {
+debug> n
+break in node:events:511
+ 509 
+ 510   if (handler === undefined)
+>511     return false;
+ 512 
+ 513   if (typeof handler === 'function') {
+debug> n
+break in node:events:462
+ 460  */
+ 461 EventEmitter.prototype.emit = function emit(type, ...args) {
+>462   let doError = (type === 'error');
+ 463 
+ 464   const events = this._events;
+debug> n
+break in node:events:464
+ 462   let doError = (type === 'error');
+ 463 
+>464   const events = this._events;
+ 465   if (events !== undefined) {
+ 466     if (doError && events[kErrorMonitor] !== undefined)
+debug> n
+break in node:events:465
+ 463 
+ 464   const events = this._events;
+>465   if (events !== undefined) {
+ 466     if (doError && events[kErrorMonitor] !== undefined)
+ 467       this.emit(kErrorMonitor, ...args);
+debug> n
+break in node:events:466
+ 464   const events = this._events;
+ 465   if (events !== undefined) {
+>466     if (doError && events[kErrorMonitor] !== undefined)
+ 467       this.emit(kErrorMonitor, ...args);
+ 468     doError = (doError && events.error === undefined);
+debug> n
+break in node:events:468
+ 466     if (doError && events[kErrorMonitor] !== undefined)
+ 467       this.emit(kErrorMonitor, ...args);
+>468     doError = (doError && events.error === undefined);
+ 469   } else if (!doError)
+ 470     return false;
+debug> n
+break in node:events:473
+ 471 
+ 472   // If there is no 'error' event listener then throw.
+>473   if (doError) {
+ 474     let er;
+ 475     if (args.length > 0)
+debug> 
+break in node:events:508
+ 506   }
+ 507 
+>508   const handler = events[type];
+ 509 
+ 510   if (handler === undefined)
+debug> n
+break in node:events:510
+ 508   const handler = events[type];
+ 509 
+>510   if (handler === undefined)
+ 511     return false;
+ 512 
+debug> n
+break in node:events:511
+ 509 
+ 510   if (handler === undefined)
+>511     return false;
+ 512 
+ 513   if (typeof handler === 'function') {
+debug> n
+break in node:events:511
+ 509 
+ 510   if (handler === undefined)
+>511     return false;
+ 512 
+ 513   if (typeof handler === 'function') {
+debug> n
+< Waiting for the debugger to disconnect...
+< 
+debug> n
+Uncaught Error [ERR_DEBUGGER_ERROR]: Can only perform operation while paused.
+    at _pending.<computed> (node:internal/debugger/inspect_client:247:27)
+    at Client._handleChunk (node:internal/debugger/inspect_client:214:11)
+    at Socket.emit (node:events:514:28)
+    at Socket.emit (node:domain:488:12)
+    at addChunk (node:internal/streams/readable:376:12)
+    at readableAddChunk (node:internal/streams/readable:349:9)
+    at Readable.push (node:internal/streams/readable:286:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+    at TCP.callbackTrampoline (node:internal/async_hooks:130:17) {
+  code: -32000
+}
+debug> n
+Uncaught Error [ERR_DEBUGGER_ERROR]: Can only perform operation while paused.
+    at _pending.<computed> (node:internal/debugger/inspect_client:247:27)
+    at Client._handleChunk (node:internal/debugger/inspect_client:214:11)
+    at Socket.emit (node:events:514:28)
+    at Socket.emit (node:domain:488:12)
+    at addChunk (node:internal/streams/readable:376:12)
+    at readableAddChunk (node:internal/streams/readable:349:9)
+    at Readable.push (node:internal/streams/readable:286:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+    at TCP.callbackTrampoline (node:internal/async_hooks:130:17) {
+  code: -32000
+}
+debug> n
+Uncaught Error [ERR_DEBUGGER_ERROR]: Can only perform operation while paused.
+    at _pending.<computed> (node:internal/debugger/inspect_client:247:27)
+    at Client._handleChunk (node:internal/debugger/inspect_client:214:11)
+    at Socket.emit (node:events:514:28)
+    at Socket.emit (node:domain:488:12)
+    at addChunk (node:internal/streams/readable:376:12)
+    at readableAddChunk (node:internal/streams/readable:349:9)
+    at Readable.push (node:internal/streams/readable:286:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+    at TCP.callbackTrampoline (node:internal/async_hooks:130:17) {
+  code: -32000

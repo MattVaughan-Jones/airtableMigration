@@ -1,6 +1,6 @@
 // https://airtable.com/appfYtO0pGcnIVEfW/api/docs#javascript/table:updated%20leads%20view:list
 
-import Airtable from 'airtable';
+// import Airtable from 'airtable';
 import { airtableAccesstoken,
     airtableSalesBaseID,
     airtableSalesUpdatedLeadsViewID
@@ -12,13 +12,17 @@ type ReturnData = {
     fields: {}
 }
 
-const base = new Airtable({apiKey: airtableAccesstoken}).base(airtableSalesBaseID);
+// const base = new Airtable({apiKey: airtableAccesstoken}).base(airtableSalesBaseID);
 
 const getRecord = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            let airtableResponse = await fetch('https://api.airtable.com/v0/appfYtO0pGcnIVEfW/Updated%20Leads%20View/rec42w0aTRp6NSeFc', {
-                headers: {Authorization: `Bearer ${airtableAccesstoken}`}
+            let airtableResponse = await fetch('https://api.airtable.com/v0/appfYtO0pGcnIVEfW/Updated%20Leads%20View/rec42w0aTRp6NSeFc',
+            {
+                headers: {
+                    Authorization: `Bearer ${airtableAccesstoken}`,
+                    mode: 'cors'
+                }
             });
 
             const returnData = await airtableResponse.json() as ReturnData;
