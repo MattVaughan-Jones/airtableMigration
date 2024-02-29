@@ -9,7 +9,7 @@ const main = async () => {
         // let airtableData = await airtableController.getRecords();
         let testRecord: any = await airtableController.getRecord();
         // convertAirtableToHubspot(airtableData);
-        convertAirtableToHubspot(testRecord);
+        // convertAirtableToHubspot(testRecord);
         // hubspotController.createRecord(airtableData);
     } catch (e) {
         console.log(e);
