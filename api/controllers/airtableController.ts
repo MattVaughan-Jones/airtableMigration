@@ -14,23 +14,20 @@ type ReturnData = {
 
 // const base = new Airtable({apiKey: airtableAccesstoken}).base(airtableSalesBaseID);
 
-const getRecord = () => {
-    return new Promise(async (resolve, reject) => {
+const getRecord = async () => {
         try {
             let airtableResponse = await fetch('https://api.airtable.com/v0/appfYtO0pGcnIVEfW/Updated%20Leads%20View/rec42w0aTRp6NSeFc',
             {
                 headers: {
                     Authorization: `Bearer ${airtableAccesstoken}`,
-                    mode: 'cors'
                 }
             });
 
             const returnData = await airtableResponse.json() as ReturnData;
-            resolve([returnData.fields]);
+            return [returnData.fields];
         } catch (e) {
-            reject(e);
+            return e;
         }
-    })
 }
 
 // const getRecords = () => {

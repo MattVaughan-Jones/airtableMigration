@@ -1,6 +1,18 @@
 import * as hubspot from '@hubspot/api-client'
 import { hubspotAccessToken } from '../constants.js';
 
+// TODO - create a file which contains only an object to record the status of converted records
+//        Form
+// [{
+//     airtableID: string,
+//     converted: boolean,
+//     attemptedHSMigration: boolean,
+//     createdContactSuccessfully: boolean,
+//     createdDealSuccessfully: boolean,
+//     createdAssociationSuccessfully: boolean,
+//     errorMessage?: string
+// }]
+
 const hubspotClient = new hubspot.Client({ accessToken: hubspotAccessToken });
 
 const createRecord = async (airtableData: any) => {
