@@ -1,239 +1,222 @@
+import { ConvertedRecord } from "./types";
+
 const emailRegex = /^.+@.+\.[\w-]{2,4}$/;
-const dateRegex = /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z$/;
+const datetimeRegex = /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z$/;
+const dateRegex = /^[0-9]{4}-[0-9]{2}-[0-9]{2}/;
 
-// TODO - find out what 'Lead Code' field in hubspot is, and whether it's needed
-
-type ConvertedRecord = {
-    importedFromAirtable: string,
-    solarVICQuoteReference?: string | void,
-    requestedQuotes?: string | void,
-    region?: string,
-    dateSubmitted?: string,
-    timeframe?: string,
-    siteVisitRequired?: boolean,
-    systemPriceType?: string,
-    firstName?: string,
-    lastName?: string,
-    email?: string,
-    phoneNumber?: string,
-    streetAddress?: string,
-    roofType?: string,
-    roofSlope?: string,
-    stories?: string,
-    systemSize?: string,
-    customerNotes?: string,
-    attachments?: {}[],
-    dealStageID?: number,
-    salesNotes?: string,
-    commissionAmount?: string,
-    commissionPaidDate?: string,
-    salesPerson?: string,
-    leadSource?: string,
-    soldDate?: string,
-    createDate?: string,
-    inspectionDate?: string,
-    priority?: string,
-    revenueExGST?: string,
-    revenueIncGST?: string,
-    uploadedCESToFormbay?: string,
-    isInstalled?: string,
-}
-    
 const convertAirtableToHubspot = (airtableData: any) => {
     let convertedData: ConvertedRecord[] = [];
 
     airtableData.forEach((el: any) => {
         const convertedRecord: ConvertedRecord = {
-            importedFromAirtable: 'true', // to flag which records were imported via this code (makes cleanup easier)
+            airtableRecordId: el.airtableRecordId,
+            deal: {
+                properties: {
+                    imported_from_airtable_via_api: 'true', // to flag which records were imported via this code (makes cleanup easier)
+                },
+                associations: []
+            },
+            contact: {
+                properties: {
+                    imported_from_airtable_via_api: 'true',
+                },
+                associations: []
+            },
+            dealNotes: {
+                properties: {},
+            },
         };
         
-        if (typeof el['Lead Reference'] == 'string') convertedRecord.solarVICQuoteReference = el['Lead Reference'];
-        if (+el['Requested Quotes'] > 0) convertedRecord.requestedQuotes = el['Requested Quotes'].toString();
-        if (convertRegion(el['Region'])) convertedRecord.region = convertRegion(el['Region']);
-        if (convertISODatetime(el['Date Submitted'])) convertedRecord.dateSubmitted = convertISODatetime(el['Date Submitted']);
-        if (convertTimeframe(el['Timeframe'])) convertedRecord.timeframe = convertTimeframe(el['Timeframe']);
-        if (typeof convertHomeVisit(el['Home Visit']) == 'boolean') convertedRecord.siteVisitRequired = convertHomeVisit(el['Home Visit']);
-        if (convertSystemPriceType(el['System Price Type'])) convertedRecord.systemPriceType = convertSystemPriceType(el['System Price Type']);
-        if (typeof el['First Name'] == 'string') convertedRecord.firstName = el['First Name'];
-        if (typeof el['Last name'] == 'string') convertedRecord.lastName = el['Last name'];
-        if (emailRegex.test(el['Email'])) convertedRecord.email = el['Email'];
-        if (convertContactNumber(el['Contact Number'])) convertedRecord.phoneNumber = convertContactNumber(el['Contact Number']);
-        if (convertAddressFields(el['Address'], el['Suburb'], el['Postcode 1'], el['State'])) convertedRecord.streetAddress = convertAddressFields(el['Address'], el['Suburb'], el['Postcode 1'], el['State']);
-        if (convertRoofType(el['Roof Type'])) convertedRecord.roofType = convertRoofType(el['Roof Type']);
-        if (convertRoofSlope(el['Roof Slope'])) convertedRecord.roofSlope = convertRoofSlope(el['Roof Slope']);
-        if (convertStories(el['Storeys'])) convertedRecord.stories = convertStories(el['Storeys']);
-        if (convertSystemSize(el['System Size'], el['System Size 2'], el['System Size 3'])) convertedRecord.systemSize = convertSystemSize(el['System Size'], el['System Size 2'], el['System Size 3']);
-        if (convertFeatures(el['Features 2'])) convertedRecord.customerNotes = convertFeatures(el['Features 2']);
+        if (typeof el['Lead Reference'] == 'string') convertedRecord.deal.properties.deal_reference_number = el['Lead Reference'];
+        if (+el['Requested Quotes'] > 0) convertedRecord.deal.properties.requested_quotes = el['Requested Quotes'].toString();
+        if (convertRegion(el['Region'])) convertedRecord.deal.properties.region = convertRegion(el['Region']);
+        if (convertISODatetime(el['Date Submitted'])) convertedRecord.deal.properties.date_submitted = convertISODatetime(el['Date Submitted']);
+        if (convertTimeframe(el['Timeframe'])) convertedRecord.deal.properties.timeframe = convertTimeframe(el['Timeframe']);
+        if (typeof convertHomeVisit(el['Home Visit']) == 'boolean') convertedRecord.deal.properties.site_visit_required = convertHomeVisit(el['Home Visit']);
+        if (convertSystemPriceType(el['System Price Type'])) convertedRecord.deal.properties.system_price_type = convertSystemPriceType(el['System Price Type']);
+        if (typeof el['First Name'] == 'string') convertedRecord.contact.properties.firstname = el['First Name'];
+        if (typeof el['Last name'] == 'string') convertedRecord.contact.properties.lastname = el['Last name'];
+        if (emailRegex.test(el['Email'])) convertedRecord.contact.properties.email = el['Email'];
+        if (convertContactNumber(el['Contact Number'])) convertedRecord.contact.properties.phone = convertContactNumber(el['Contact Number']);
+        if (convertAddressFields(el['Address'], el['Suburb'], el['Postcode 1'], el['State'])) convertedRecord.deal.properties.site_address = convertAddressFields(el['Address'], el['Suburb'], el['Postcode 1'], el['State']);
+        if (convertRoofType(el['Roof Type'])) convertedRecord.deal.properties.roof_type = convertRoofType(el['Roof Type']);
+        if (convertRoofSlope(el['Roof Slope'])) convertedRecord.deal.properties.roof_pitch = convertRoofSlope(el['Roof Slope']);
+        if (convertStories(el['Storeys'])) convertedRecord.deal.properties.storeys = convertStories(el['Storeys']);
+        if (convertSystemSize(el['System Size'], el['System Size 2'], el['System Size 3'])) convertedRecord.deal.properties.system_size_requested = convertSystemSize(el['System Size'], el['System Size 2'], el['System Size 3']);
+        if (convertFeatures(el['Features 2'])) convertedRecord.deal.properties.customer_notes = convertFeatures(el['Features 2']);
         if (el['Proposal']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['Proposal']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['Proposal']];
             } else {
-                convertedRecord.attachments = el['Proposal'];
+                convertedRecord.dealNotes.properties.attachments = el['Proposal'];
             }
         }
-        if (convertStatus(el['Status'], el['Status 1'], el['Status (Solar Choice)'])) convertedRecord.dealStageID = convertStatus(el['Status'], el['Status 1'], el['Status (Solar Choice)']);
+        if (convertStatus(el['Status'], el['Status 1'], el['Status (Solar Choice)'])) convertedRecord.deal.properties.dealstage = convertStatus(el['Status'], el['Status 1'], el['Status (Solar Choice)']);
         if (convertQuotingNotes(el['Quoting Notes'])) {
-            if (convertedRecord.salesNotes) {
-                convertedRecord.salesNotes += convertQuotingNotes(el['Quoting Notes']);
+            if (convertedRecord.dealNotes.properties.note) {
+                convertedRecord.dealNotes.properties.note += convertQuotingNotes(el['Quoting Notes']);
             } else {
-                convertedRecord.salesNotes = convertQuotingNotes(el['Quoting Notes']);
+                convertedRecord.dealNotes.properties.note = convertQuotingNotes(el['Quoting Notes']);
             }
         }
         if (el['Proposal 2']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['Proposal 2']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['Proposal 2']];
             } else {
-                convertedRecord.attachments = el['Proposal 2'];
+                convertedRecord.dealNotes.properties.attachments = el['Proposal 2'];
             }
         }
         if (el['Fronius Warranty Certificates 2']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['Fronius Warranty Certificates 2']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['Fronius Warranty Certificates 2']];
             } else {
-                convertedRecord.attachments = el['Fronius Warranty Certificates 2'];
+                convertedRecord.dealNotes.properties.attachments = el['Fronius Warranty Certificates 2'];
             }
         }
         if (el['Fronius Warrant Certificate 2']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['Fronius Warrant Certificate 2']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['Fronius Warrant Certificate 2']];
             } else {
-                convertedRecord.attachments = el['Fronius Warrant Certificate 2'];
+                convertedRecord.dealNotes.properties.attachments = el['Fronius Warrant Certificate 2'];
             }
         }
         if (el['Fronius Warranty Certificates']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['Fronius Warranty Certificates']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['Fronius Warranty Certificates']];
             } else {
-                convertedRecord.attachments = el['Fronius Warranty Certificates'];
+                convertedRecord.dealNotes.properties.attachments = el['Fronius Warranty Certificates'];
             }
         }
         if (el['Fronius Warranty Certificate']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['Fronius Warranty Certificate']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['Fronius Warranty Certificate']];
             } else {
-                convertedRecord.attachments = el['Fronius Warranty Certificate'];
+                convertedRecord.dealNotes.properties.attachments = el['Fronius Warranty Certificate'];
             }
         }
         if (el['Fronius Warrant Certificate']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['Fronius Warrant Certificate']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['Fronius Warrant Certificate']];
             } else {
-                convertedRecord.attachments = el['Fronius Warrant Certificate'];
+                convertedRecord.dealNotes.properties.attachments = el['Fronius Warrant Certificate'];
             }
         }
-        if (convertCommission(el['Commission on Inverter Size (kW)'])) convertedRecord.commissionAmount = convertCommission(el['Commission on Inverter Size (kW)']);
-        if (convertDateToDatetime(el['Commission Paid '])) convertedRecord.commissionPaidDate = convertDateToDatetime(el['Commission Paid ']);
+        if (convertCommission(el['Commission on Inverter Size (kW)'])) convertedRecord.deal.properties.commission_amount = convertCommission(el['Commission on Inverter Size (kW)']);
+        if (convertDateToDatetime(el['Commission Paid '])) convertedRecord.deal.properties.commission_paid_date = convertDateToDatetime(el['Commission Paid ']);
         if (el['CES, EWR and Post Installation Form']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['CES, EWR and Post Installation Form']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['CES, EWR and Post Installation Form']];
             } else {
-                convertedRecord.attachments = el['CES, EWR and Post Installation Form'];
+                convertedRecord.dealNotes.properties.attachments = el['CES, EWR and Post Installation Form'];
             }
         }
         if (el['CES, EWR and Post Installation Form 2']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['CES, EWR and Post Installation Form 2']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['CES, EWR and Post Installation Form 2']];
             } else {
-                convertedRecord.attachments = el['CES, EWR and Post Installation Form 2'];
+                convertedRecord.dealNotes.properties.attachments = el['CES, EWR and Post Installation Form 2'];
             }
         }
         if (el['Photos and documents 2']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['Photos and documents 2']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['Photos and documents 2']];
             } else {
-                convertedRecord.attachments = el['Photos and documents 2'];
+                convertedRecord.dealNotes.properties.attachments = el['Photos and documents 2'];
             }
         }
         if (el['Approved SPA  2']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['Approved SPA  2']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['Approved SPA  2']];
             } else {
-                convertedRecord.attachments = el['Approved SPA  2'];
+                convertedRecord.dealNotes.properties.attachments = el['Approved SPA  2'];
             }
         }
         if (el['Receipts 2']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['Receipts 2']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['Receipts 2']];
             } else {
-                convertedRecord.attachments = el['Receipts 2'];
+                convertedRecord.dealNotes.properties.attachments = el['Receipts 2'];
             }
         }
         if (el['Equipment Ordered 2']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['Equipment Ordered 2']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['Equipment Ordered 2']];
             } else {
-                convertedRecord.attachments = el['Equipment Ordered 2'];
+                convertedRecord.dealNotes.properties.attachments = el['Equipment Ordered 2'];
             }
         }
         if (el['Equipment Ordered']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['Equipment Ordered']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['Equipment Ordered']];
             } else {
-                convertedRecord.attachments = el['Equipment Ordered'];
+                convertedRecord.dealNotes.properties.attachments = el['Equipment Ordered'];
             }
         }
         if (el['Attachments 2']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['Attachments 2']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['Attachments 2']];
             } else {
-                convertedRecord.attachments = el['Attachments 2'];
+                convertedRecord.dealNotes.properties.attachments = el['Attachments 2'];
             }
         }
-        if (convertSoldBy(el['Sold by'] || el['Sold by 2'] || el['Salesperson Assigned'] || null)) convertedRecord.salesPerson = convertSoldBy(el['Sold by'] || el['Sold by 2'] || el['Salesperson Assigned'] || null);
-        if (convertSource(el['Source'] || el['Source (Energy Matters)'] || el['Source 2'] || null)) convertedRecord.leadSource = convertSource(el['Source'] || el['Source (Energy Matters)'] || el['Source 2'] || null);
-        if (convertDateToDatetime(el['Date Sold'] || el['Date Sold 2'] || null)) convertedRecord.soldDate = convertDateToDatetime(el['Date Sold'] || el['Date Sold 2'] || null);
-        if (convertDateToDatetime(el['All Leads Date Added'] || el['Added Date (for organic leads)'] || el['Added Date 2'] || el['Date Added'] || null)) convertedRecord.createDate = convertDateToDatetime(el['All Leads Date Added'] || el['Added Date (for organic leads)'] || el['Added Date 2'] || el['Date Added'] || null);
+        if (convertSoldBy(el['Sold by'] || el['Sold by 2'] || el['Salesperson Assigned'] || null)) convertedRecord.deal.properties.sales_person = convertSoldBy(el['Sold by'] || el['Sold by 2'] || el['Salesperson Assigned'] || null);
+        if (convertSource(el['Source'] || el['Source (Energy Matters)'] || el['Source 2'] || null)) convertedRecord.deal.properties.lead_source = convertSource(el['Source'] || el['Source (Energy Matters)'] || el['Source 2'] || null);
+        if (convertDateToDatetime(el['Date Sold'] || el['Date Sold 2'] || null)) convertedRecord.deal.properties.sold_date = convertDateToDatetime(el['Date Sold'] || el['Date Sold 2'] || null);
+        if (convertDateToDatetime(el['All Leads Date Added'] || el['Added Date (for organic leads)'] || el['Added Date 2'] || el['Date Added'] || null)) convertedRecord.deal.properties.createdate = convertDateToDatetime(el['All Leads Date Added'] || el['Added Date (for organic leads)'] || el['Added Date 2'] || el['Date Added'] || null);
         if (el['Quote']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['Quote']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['Quote']];
             } else {
-                convertedRecord.attachments = el['Quote'];
+                convertedRecord.dealNotes.properties.attachments = el['Quote'];
             }
         }
-        if (convertSiteInspectionCompleted(el['Site Inspection Completed'])) convertedRecord.inspectionDate = convertSiteInspectionCompleted(el['Site Inspection Completed']);
-        if (convertPriorityResponse(el['Priority Response'])) convertedRecord.priority = convertPriorityResponse(el['Priority Response']);
+        if (convertSiteInspectionCompleted(el['Site Inspection Completed'])) convertedRecord.deal.properties.inspection_date = convertSiteInspectionCompleted(el['Site Inspection Completed']);
+        if (convertPriorityResponse(el['Priority Response'])) convertedRecord.deal.properties.hs_priority = convertPriorityResponse(el['Priority Response']);
         if (el['Photos and documents']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['Photos and documents']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['Photos and documents']];
             } else {
-                convertedRecord.attachments = el['Photos and documents'];
+                convertedRecord.dealNotes.properties.attachments = el['Photos and documents'];
             }
         }
         if (el['Approved SPA ']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['Approved SPA ']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['Approved SPA ']];
             } else {
-                convertedRecord.attachments = el['Approved SPA '];
+                convertedRecord.dealNotes.properties.attachments = el['Approved SPA '];
             }
         }
         if (el['Receipts']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['Receipts']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['Receipts']];
             } else {
-                convertedRecord.attachments = el['Receipts'];
+                convertedRecord.dealNotes.properties.attachments = el['Receipts'];
             }
         }
         if (el['Attachments']) {
-            if (convertedRecord.attachments) {
-                convertedRecord.attachments = [...convertedRecord.attachments, ...el['Attachments']];
+            if (convertedRecord.dealNotes.properties.attachments) {
+                convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['Attachments']];
             } else {
-                convertedRecord.attachments = el['Attachments'];
+                convertedRecord.dealNotes.properties.attachments = el['Attachments'];
             }
         }
-        if (convertRevenue(el['Revenue Ex GST'])) convertedRecord.revenueExGST = convertRevenue(el['Revenue Ex GST']);
-        if (convertRevenue(el['Revenue Inc GST'])) convertedRecord.revenueIncGST = convertRevenue(el['Revenue Inc GST']);
-        if (convertCheckbox(el['CES uploaded'])) convertedRecord.uploadedCESToFormbay =convertCheckbox(el['CES uploaded']);
-        if (convertCheckbox(el['Site Installation Complete'])) convertedRecord.isInstalled =convertCheckbox(el['Site Installation Complete']);
+        if (convertRevenue(el['Revenue Ex GST'])) convertedRecord.deal.properties.amount = convertRevenue(el['Revenue Ex GST']);
+        if (convertCheckbox(el['CES uploaded'])) convertedRecord.deal.properties.uploaded_ces_to_formbay = convertCheckbox(el['CES uploaded']);
+        if (convertCheckbox(el['Site Installation Complete'])) convertedRecord.deal.properties.is_installed = convertCheckbox(el['Site Installation Complete']);
         if (convertReferralPromoSent(el['Referral Promo Email Sent'])) {
-            if (convertedRecord.salesNotes) {
-                convertedRecord.salesNotes += convertReferralPromoSent(el['Referral Promo Email Sent']);
+            if (convertedRecord.dealNotes.properties.note) {
+                convertedRecord.dealNotes.properties.note += convertReferralPromoSent(el['Referral Promo Email Sent']);
             } else {
-                convertedRecord.salesNotes = convertReferralPromoSent(el['Referral Promo Email Sent']);
+                convertedRecord.dealNotes.properties.note = convertReferralPromoSent(el['Referral Promo Email Sent']);
             }
         }
+        if (createDealName(convertedRecord)) convertedRecord.deal.properties.dealname = createDealName(convertedRecord);
+        if (setPipeline(convertedRecord.deal.properties.dealstage)) convertedRecord.deal.properties.pipeline = setPipeline(convertedRecord.deal.properties.dealstage);
 
         convertedData.push(convertedRecord);
     })
+
+    return convertedData;
 }
 
 const convertRegion = (airtableRegion: string): string | undefined => {
@@ -247,8 +230,8 @@ const convertRegion = (airtableRegion: string): string | undefined => {
 }
 
 const convertISODatetime = (airtableDateSubmitted: string): string | undefined => {
-    if (dateRegex.test(airtableDateSubmitted)) {
-        return airtableDateSubmitted;
+    if (datetimeRegex.test(airtableDateSubmitted)) {
+        return airtableDateSubmitted.slice(0, -14);
     }
     return undefined;
 }
@@ -257,18 +240,18 @@ const convertTimeframe = (airtableTimeframe: string): string | undefined => {
     if (airtableTimeframe == 'Immediately') {
         return 'Immediately';
     } else if (airtableTimeframe == 'In the next 4 weeks') {
-        return 'In the next month';
+        return 'Next month';
     } else if (airtableTimeframe == 'In the next 3 months') {
-        return 'In the next 3 months';
+        return 'Next 3 months';
     }
     return undefined;
 }
 
-const convertHomeVisit = (airtableHomeVisit: string): boolean | undefined => {
+const convertHomeVisit = (airtableHomeVisit: string): string | undefined => {
     if (airtableHomeVisit == 'Yes' || airtableHomeVisit == 'yes') {
-        return true;
+        return 'true';
     } else {
-        return false;
+        return 'false';
     }
 }
 
@@ -364,39 +347,39 @@ const convertFeatures = (airtableFeatures2: string): string | undefined => {
     return undefined;
 }
 
-const convertStatus = (airtableStatus: string, airtableStatus1: string, airtableStatusSC: string): number | undefined => {
+const convertStatus = (airtableStatus: string, airtableStatus1: string, airtableStatusSC: string): string | undefined => {
     let inputStatus = airtableStatus1 || airtableStatus || airtableStatusSC || null;
     
     switch (inputStatus){
         case 'HS Sales - Lead':
-            return 148145969;
+            return '148145969';
         case 'HS Sales - Appointment scheduled':
-            return 147850248;
+            return '147850248';
         case 'HS Sales - Appointment completed':
-            return 153833746;
+            return '153833746';
         case 'HS Sales - Proposal Sent':
-            return 148145970;
+            return '148145970';
         case 'HS Sales - Sold':
         case 'Sold':
         case 'sold':
-            return 152485748;
+            return '152485748';
         case 'HS Sales - Closed lost':
-            return 147850254;
+            return '147850254';
         case 'HS Ops - Awaiting Solar VIC approval':
-            return 147875762;
+            return '147875762';
         case 'HS Ops - Ready':
-            return 152420622;
+            return '152420622';
         case 'HS Ops - Install in progress':
-            return 147875766;
+            return '147875766';
         case 'HS Ops - Installed':
-            return 147875767;
+            return '147875767';
         case 'HS Ops - Connected + rebates claimed':
-            return 152485748;
+            return '152485748';
         case 'HS Ops - Install aborted':
-            return 147875768;
+            return '147875768';
     }
     
-    return 147850254;
+    return '147850254';
 }
 
 // TODO - make sure the note created in Hubspot also has new lines, not just a literal \n.
@@ -417,7 +400,7 @@ const convertCommission = (airtableCommOnInverterSize: string): string | undefin
 }
 
 const convertDateToDatetime = (airtableCommPaidDate: string): string | undefined => {
-    const adjustedDate = airtableCommPaidDate + 'T00:00:00.000Z'
+    const adjustedDate = airtableCommPaidDate;
     if (dateRegex.test(adjustedDate)) {
         return adjustedDate;
     }
@@ -461,7 +444,7 @@ const convertSource = (airtableSource: string): string | undefined => {
 }
 
 const convertSiteInspectionCompleted = (airtableSiteInspectionCompleted: string): string | undefined => {
-    const adjustedDate = airtableSiteInspectionCompleted + 'T00:00:00.000Z'
+    const adjustedDate = airtableSiteInspectionCompleted;
     if (dateRegex.test(adjustedDate)) {
         return adjustedDate;
     }
@@ -476,7 +459,7 @@ const convertPriorityResponse = (airtablePriorityResponse: string): string | und
 }
 
 const convertRevenue = (airtableRevenue: number): string | undefined => {
-    if (/^\d*\.?\d*$/.test(airtableRevenue.toString()) && airtableRevenue > 0) {
+    if (airtableRevenue && /^\d*\.?\d*$/.test(airtableRevenue.toString()) && airtableRevenue > 0) {
         return airtableRevenue.toFixed(2).toString();
     }
     return undefined;
@@ -484,7 +467,7 @@ const convertRevenue = (airtableRevenue: number): string | undefined => {
 
 const convertCheckbox = (airtableCheckboxField: string): string | undefined => {
     if (airtableCheckboxField) {
-        return 'yes';
+        return 'true';
     }
     return undefined;
 }
@@ -494,6 +477,41 @@ const convertReferralPromoSent = (airtablePromoSent: string): string | undefined
         return `Referral promo email sent on ${airtablePromoSent}.\n`;
     }
     return undefined;
+}
+
+const createDealName = (convertedRecord: ConvertedRecord): string => {
+    if (convertedRecord.deal.properties.site_address) {
+        return convertedRecord.deal.properties.site_address;
+    } else if (convertedRecord.contact.properties.firstname && convertedRecord.contact.properties.lastname) {
+        return convertedRecord.contact.properties.firstname + ' ' + convertedRecord.contact.properties.lastname;
+    } else if (convertedRecord.contact.properties.firstname) {
+        return convertedRecord.contact.properties.firstname;
+    } else if (convertedRecord.contact.properties.lastname) {
+        return convertedRecord.contact.properties.lastname;
+    }
+    return 'imported from airtable'
+}
+
+const setPipeline = (dealstage: string | undefined): string => {
+    switch (dealstage){
+        case '148145969':
+        case '147850248':
+        case '153833746':
+        case '148145970':
+        case '152485748':
+        case '147850254':
+            return '77794118'; // sales pipeline
+
+        case '147875762':
+        case '152420622':
+        case '147875766':
+        case '147875767':
+        case '152485748':
+        case '147875768':
+            return '77807782'; // ops pipeline
+    }
+
+    return 'unable to find deal pipeline';
 }
 
 export {
