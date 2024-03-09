@@ -1,5 +1,7 @@
 import { ConvertedRecord } from "./types";
 
+// TODO - migrate last activity date
+
 const emailRegex = /^.+@.+\.[\w-]{2,4}$/;
 const datetimeRegex = /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z$/;
 const dateRegex = /^[0-9]{4}-[0-9]{2}-[0-9]{2}/;
@@ -27,7 +29,6 @@ const convertAirtableToHubspot = (airtableData: any) => {
             },
         };
         
-        if (typeof el['Lead Reference'] == 'string') convertedRecord.deal.properties.deal_reference_number = el['Lead Reference'];
         if (+el['Requested Quotes'] > 0) convertedRecord.deal.properties.requested_quotes = el['Requested Quotes'].toString();
         if (convertRegion(el['Region'])) convertedRecord.deal.properties.region = convertRegion(el['Region']);
         if (convertISODatetime(el['Date Submitted'])) convertedRecord.deal.properties.date_submitted = convertISODatetime(el['Date Submitted']);
@@ -498,7 +499,6 @@ const setPipeline = (dealstage: string | undefined): string => {
         case '147850248':
         case '153833746':
         case '148145970':
-        case '152485748':
         case '147850254':
             return '77794118'; // sales pipeline
 

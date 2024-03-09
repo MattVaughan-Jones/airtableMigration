@@ -29,7 +29,7 @@ export type ConvertedDealRecord = {
         uploaded_ces_to_formbay?: string,
         is_installed?: string,
     },
-    associations: []
+    associations: never[]
 };
 
 export type ConvertedContactRecord = {
@@ -40,7 +40,7 @@ export type ConvertedContactRecord = {
         email?: string,
         phone?: string,
     },
-    associations: []
+    associations: never[]
 };
 
 export type ConvertedNoteRecord = {
