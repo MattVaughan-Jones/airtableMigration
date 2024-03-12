@@ -1,7 +1,5 @@
 import { ConvertedRecord } from "./types";
 
-// TODO - migrate last activity date
-
 const emailRegex = /^.+@.+\.[\w-]{2,4}$/;
 const datetimeRegex = /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z$/;
 const dateRegex = /^[0-9]{4}-[0-9]{2}-[0-9]{2}/;
@@ -11,16 +9,15 @@ const convertAirtableToHubspot = (airtableData: any) => {
 
     airtableData.forEach((el: any) => {
         const convertedRecord: ConvertedRecord = {
-            airtableRecordId: el.airtableRecordId,
             deal: {
                 properties: {
-                    imported_from_airtable_via_api: 'true', // to flag which records were imported via this code (makes cleanup easier)
+                    airtable_record_id: el.airtableRecordId
                 },
                 associations: []
             },
             contact: {
                 properties: {
-                    imported_from_airtable_via_api: 'true',
+                    airtable_record_id: el.airtableRecordId
                 },
                 associations: []
             },
@@ -28,7 +25,7 @@ const convertAirtableToHubspot = (airtableData: any) => {
                 properties: {},
             },
         };
-        
+
         if (+el['Requested Quotes'] > 0) convertedRecord.deal.properties.requested_quotes = el['Requested Quotes'].toString();
         if (convertRegion(el['Region'])) convertedRecord.deal.properties.region = convertRegion(el['Region']);
         if (convertISODatetime(el['Date Submitted'])) convertedRecord.deal.properties.date_submitted = convertISODatetime(el['Date Submitted']);
@@ -37,7 +34,7 @@ const convertAirtableToHubspot = (airtableData: any) => {
         if (convertSystemPriceType(el['System Price Type'])) convertedRecord.deal.properties.system_price_type = convertSystemPriceType(el['System Price Type']);
         if (typeof el['First Name'] == 'string') convertedRecord.contact.properties.firstname = el['First Name'];
         if (typeof el['Last name'] == 'string') convertedRecord.contact.properties.lastname = el['Last name'];
-        if (emailRegex.test(el['Email'])) convertedRecord.contact.properties.email = el['Email'];
+        if (emailRegex.test(el['Email'])) convertedRecord.contact.properties.email = el['Email'].replace(' ', '');
         if (convertContactNumber(el['Contact Number'])) convertedRecord.contact.properties.phone = convertContactNumber(el['Contact Number']);
         if (convertAddressFields(el['Address'], el['Suburb'], el['Postcode 1'], el['State'])) convertedRecord.deal.properties.site_address = convertAddressFields(el['Address'], el['Suburb'], el['Postcode 1'], el['State']);
         if (convertRoofType(el['Roof Type'])) convertedRecord.deal.properties.roof_type = convertRoofType(el['Roof Type']);
@@ -213,9 +210,14 @@ const convertAirtableToHubspot = (airtableData: any) => {
         }
         if (createDealName(convertedRecord)) convertedRecord.deal.properties.dealname = createDealName(convertedRecord);
         if (setPipeline(convertedRecord.deal.properties.dealstage)) convertedRecord.deal.properties.pipeline = setPipeline(convertedRecord.deal.properties.dealstage);
+        if (convertISODatetime(el['Last modified'])) convertedRecord.deal.properties.closedate = convertISODatetime(el['Last modified']);
 
         convertedData.push(convertedRecord);
     })
+
+    convertedData = convertedData.filter((el) => {
+        return el.deal.properties.dealstage !== 'do not migrate';
+    });
 
     return convertedData;
 }
@@ -378,6 +380,8 @@ const convertStatus = (airtableStatus: string, airtableStatus1: string, airtable
             return '152485748';
         case 'HS Ops - Install aborted':
             return '147875768';
+        case 'HS - Already in HS':
+            return 'do not migrate';
     }
     
     return '147850254';
@@ -386,7 +390,7 @@ const convertStatus = (airtableStatus: string, airtableStatus1: string, airtable
 // TODO - make sure the note created in Hubspot also has new lines, not just a literal \n.
 const convertQuotingNotes = (airtableQuotingNotes: string): string | undefined => {
     if (airtableQuotingNotes) {
-        return airtableQuotingNotes + '.\n';
+        return airtableQuotingNotes + '.<br/>';
     }
     return undefined;
 }
@@ -475,7 +479,7 @@ const convertCheckbox = (airtableCheckboxField: string): string | undefined => {
 
 const convertReferralPromoSent = (airtablePromoSent: string): string | undefined => {
     if (airtablePromoSent) {
-        return `Referral promo email sent on ${airtablePromoSent}.\n`;
+        return `Referral promo email sent on ${airtablePromoSent}.<br/>`;
     }
     return undefined;
 }

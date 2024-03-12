@@ -35,36 +35,19 @@ const getTestRecord = async () => {
         }
 }
 
-// const getRecords2 = async () => {
-//     console.log('runs correctly');
-//     try {
-//         let airtableResponse = await fetch(`https://api.airtable.com/v0/${airtableSalesBaseID}/${airtableSalesUpdatedLeadsViewID}?maxRecords=4&view=ALL&pageSize=2&offset=${offset}`,
-//         {
-//             headers: {
-//                 Authorization: `Bearer ${airtableAccesstoken}`,
-//             }
-//         });
-
-//         const returnData = await airtableResponse.json() as ReturnData;  // TODO - make new type for array of responses
-//         console.log(returnData);
-//         // return [returnData.fields];
-//     } catch (e) {
-//         return e;
-//     }
-// }
-
 const getRecords = () => {
     return new Promise((resolve, reject) => {
         let results: {}[] = [];
 
         base(airtableSalesUpdatedLeadsViewID).select({
-            maxRecords: 1,
+            maxRecords: 80,
             view: "ALL",
             // pageSize: 2
         }).eachPage(
             function page(records, fetchNextPage) {
                 // This function (`page`) will get called for each page of records.
                 records.forEach((record) => {
+                    record.fields.airtableRecordId = record.id;
                     results.push(record.fields);
                 });
             

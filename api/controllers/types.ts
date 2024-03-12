@@ -1,6 +1,6 @@
 export type ConvertedDealRecord = {
     properties: {
-        imported_from_airtable_via_api: string,
+        airtable_record_id: string,
         dealname?: string,
         deal_reference_number?: string,
         requested_quotes?: string,
@@ -28,13 +28,14 @@ export type ConvertedDealRecord = {
         amount?: string,
         uploaded_ces_to_formbay?: string,
         is_installed?: string,
+        closedate?: string
     },
     associations: never[]
 };
 
 export type ConvertedContactRecord = {
     properties: {
-        imported_from_airtable_via_api: string,
+        airtable_record_id: string,
         firstname?: string,
         lastname?: string,
         email?: string,
@@ -51,7 +52,6 @@ export type ConvertedNoteRecord = {
 };
 
 export type ConvertedRecord = {
-    airtableRecordId: string,
     deal: ConvertedDealRecord,
     contact: ConvertedContactRecord,
     dealNotes: ConvertedNoteRecord
