@@ -41,7 +41,7 @@ const createRecord = async (cleanData: ConvertedRecord[]) => {
                 note: 1
             }
         }
-    }
+    } // TODO - delete faulty data
 
     const getCorrespondingContactId = (airtableRecordId: string, createContactResponse: BatchResponseSimplePublicObject): string => {
         let createContactResponseIndex = createContactResponse.results.findIndex((el) => {
@@ -55,13 +55,12 @@ const createRecord = async (cleanData: ConvertedRecord[]) => {
         let createDealResponseIndex = createDealResponse.results.findIndex((el) => {
             return el.properties.airtable_record_id === airtableRecordId;
         });
-
         return createDealResponse.results[createDealResponseIndex].id;
     }
 
-    const batchSize = 5; // TODO - setTimeout around the try/catch to keep below 100 API calls per 10s.
-    for (let i = 0; i < cleanData.length; i += batchSize) {
-        let cleanDataBatch = cleanData.slice(i, i + batchSize);
+    const batchSize = 2; // TODO - setTimeout around the try/catch to keep below 100 API calls per 10s.
+    for (let batchIndex = 0; batchIndex < cleanData.length; batchIndex += batchSize) {
+        let cleanDataBatch = cleanData.slice(batchIndex, batchIndex + batchSize);
 
         let dealsArrBatch = cleanDataBatch.map((el) => {
             return el.deal;
@@ -72,15 +71,17 @@ const createRecord = async (cleanData: ConvertedRecord[]) => {
         });
         
         try {
-            // let createContactsResponse = await hubspotClient.crm.contacts.batchApi.create({inputs: contactsArrBatch});
+            // TODO - probably need some try/catch blocks around creation of non-essential objects, to allow other objects to be created if something fails
+            let createContactsResponse = await hubspotClient.crm.contacts.batchApi.create({inputs: contactsArrBatch});
             let createDealsResponse = await hubspotClient.crm.deals.batchApi.create({inputs: dealsArrBatch});
 
             let createNotesObj: BatchInputSimplePublicObjectInputForCreate = {
                 inputs: []
             };
 
-            for (let i=0 ; i < cleanData.length ; i++) {
-                if (cleanData[i].dealNotes.properties.note && cleanData[i].deal.properties.closedate) {
+            // for each record with a note, push it to the createNotesObj.inputs array
+            for (let notesBatchIndex=0 ; notesBatchIndex < cleanDataBatch.length ; notesBatchIndex++) {
+                if (cleanDataBatch[notesBatchIndex].dealNotes.properties.note && cleanDataBatch[notesBatchIndex].deal.properties.closedate) {
                     let input = {
                             "associations": [
                                 {
@@ -89,13 +90,13 @@ const createRecord = async (cleanData: ConvertedRecord[]) => {
                                         "associationTypeId": 214 // Note-to-deal
                                     }],
                                     "to": {
-                                        "id": getCorrespondingDealId(cleanData[i].deal.properties.airtable_record_id, createDealsResponse)
+                                        "id": getCorrespondingDealId(cleanDataBatch[notesBatchIndex].deal.properties.airtable_record_id, createDealsResponse)
                                     }
                                 }
                             ],
                             "properties":{
-                                "hs_note_body": cleanData[i].dealNotes.properties.note,
-                                "hs_timestamp": cleanData[i].deal.properties.closedate,
+                                "hs_note_body": cleanDataBatch[notesBatchIndex].dealNotes.properties.note,
+                                "hs_timestamp": cleanDataBatch[notesBatchIndex].deal.properties.closedate,
                                 "hubspot_owner_id": "699030157"
                             }
                         }
@@ -105,75 +106,29 @@ const createRecord = async (cleanData: ConvertedRecord[]) => {
                 }    
             }
 
-            let createNotesResponse = await hubspotClient.crm.objects.notes.batchApi.create(createNotesObj);
-            console.log(createNotesResponse);
+            if (createNotesObj.inputs.length > 0) {
+                let createNotesResponse = await hubspotClient.crm.objects.notes.batchApi.create(createNotesObj);
+            }
 
-            // if (cleanData[0].dealNotes.properties.note && cleanData[0].deal.properties.closedate) {
-            //     const createNotesObj = {
-            //         inputs: [
-            //             {
-            //                 "associations": [
-            //                     {
-            //                         "types": [{
-            //                             "associationCategory": "HUBSPOT_DEFINED" as AssociationSpecAssociationCategoryEnum,
-            //                             "associationTypeId": 214 // Note-to-deal
-            //                         }],
-            //                         "to": {
-            //                             "id": getCorrespondingDealId(cleanData[0].deal.properties.airtable_record_id, createDealsResponse)
-            //                         }
-            //                     }
-            //                 ],
-            //                 "properties":{
-            //                     "hs_note_body": cleanData[0].dealNotes.properties.note,
-            //                     "hs_timestamp": cleanData[0].deal.properties.closedate,
-            //                     "hubspot_owner_id": "699030157"
-            //                 }
-            //             },
-            //             {
-            //                 "associations": [
-            //                     {
-            //                         "types": [{
-            //                             "associationCategory": "HUBSPOT_DEFINED" as AssociationSpecAssociationCategoryEnum,
-            //                             "associationTypeId": 214 // Note-to-deal
-            //                         }],
-            //                         "to": {
-            //                             "id": getCorrespondingDealId(cleanData[0].deal.properties.airtable_record_id, createDealsResponse)
-            //                         }
-            //                     }
-            //                 ],
-            //                 "properties":{
-            //                     "hs_note_body": 'other note',
-            //                     "hs_timestamp": cleanData[0].deal.properties.closedate,
-            //                     "hubspot_owner_id": "699030157"
-            //                 }
-            //             }
-            //         ]
-            //     }
+            let associationsObj: any = {
+                inputs: []
+            }
 
-            //     let createNotesResponse = await hubspotClient.crm.objects.notes.batchApi.create(createNotesObj);
-            //     console.log(createNotesResponse);
-            // }
+            createDealsResponse.results.forEach((el) => {
+                associationsObj.inputs.push(
+                    {
+                        _from: { id: getCorrespondingContactId(el.properties.airtable_record_id as string, createContactsResponse) },
+                        to: { id: el.id },
+                        type: 'contact_to_deal'
+                    }
+                );
+            });
 
-            // let associationsObj: any = {
-            //     inputs: []
-            // }
-
-            // TODO - can I batch create notes and therefore set up the notes obj at the same time as the associations obj?
-            // createDealsResponse.results.forEach((el) => {
-            //     associationsObj.inputs.push(
-            //         {
-            //             _from: { id: getCorrespondingContactId(el.properties.airtable_record_id as string, createContactsResponse) },
-            //             to: { id: el.id },
-            //             type: 'contact_to_deal'
-            //         }
-            //     );
-            // });
-
-            // let createAssociationResponse = await hubspotClient.crm.associations.batchApi.create(
-            //     'contacts',
-            //     'deals',
-            //     associationsObj
-            // );
+            let createAssociationResponse = await hubspotClient.crm.associations.batchApi.create(
+                'contacts',
+                'deals',
+                associationsObj
+            );
 
 
         } catch (e) {
@@ -185,6 +140,8 @@ const createRecord = async (cleanData: ConvertedRecord[]) => {
             logger.error(e);
         }
     }
+
+    console.log('last item migrated');
 
     // TODO - based on this list, re-do the migration, on only these records that weren't migrated originally
     logger.info('Unmigrated records: %s', allUnmigratedRecords);

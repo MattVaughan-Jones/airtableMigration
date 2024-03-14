@@ -14,8 +14,6 @@ type ReturnData = {
     }
 }
 
-const maxRecords = 2;
-
 const base = new Airtable({apiKey: airtableAccesstoken}).base(airtableSalesBaseID);
 
 const getTestRecord = async () => {

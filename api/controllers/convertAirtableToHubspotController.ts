@@ -387,7 +387,6 @@ const convertStatus = (airtableStatus: string, airtableStatus1: string, airtable
     return '147850254';
 }
 
-// TODO - make sure the note created in Hubspot also has new lines, not just a literal \n.
 const convertQuotingNotes = (airtableQuotingNotes: string): string | undefined => {
     if (airtableQuotingNotes) {
         return airtableQuotingNotes + '.<br/>';

@@ -8,10 +8,10 @@ import { convertAirtableToHubspot } from './controllers/convertAirtableToHubspot
 const main = async () => {
     console.log('========new run==========');
     try {
-        // let airtableData = await airtableController.getRecords();
-        let testRecord = await airtableController.getTestRecord();
-        let convertedData = convertAirtableToHubspot(testRecord);
-        // let convertedData = convertAirtableToHubspot(airtableData);
+        let airtableData = await airtableController.getRecords();
+        let convertedData = convertAirtableToHubspot(airtableData);
+        // let testRecord = await airtableController.getTestRecord();
+        // let convertedData = convertAirtableToHubspot(testRecord);
         hubspotController.createRecord(convertedData);
     } catch (e) {
         console.log(e);
