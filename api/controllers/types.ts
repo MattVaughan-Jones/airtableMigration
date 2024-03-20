@@ -47,7 +47,13 @@ export type ConvertedContactRecord = {
 export type ConvertedNoteRecord = {
     properties: {
         note?: string,
-        attachments?: {}[],
+        attachments?: {
+            id: string,
+            url: string,
+            filename: string,
+            size: number,
+            type: string
+        }[],
     }
 };
 
