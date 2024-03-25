@@ -1,8 +1,8 @@
 import { ConvertedRecord } from "./types";
 
 const emailRegex = /^.+@.+\.[\w-]{2,4}$/;
-const datetimeRegex = /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z$/;
-const dateRegex = /^[0-9]{4}-[0-9]{2}-[0-9]{2}/;
+const datetimeRegex = /^2[0-9]{3}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z$/;
+const dateRegex = /^2[0-9]{3}-[0-9]{2}-[0-9]{2}/;
 
 const convertAirtableToHubspot = (airtableData: any) => {
     let convertedData: ConvertedRecord[] = [];
@@ -158,9 +158,10 @@ const convertAirtableToHubspot = (airtableData: any) => {
             }
         }
         if (convertSoldBy(el['Sold by'] || el['Sold by 2'] || el['Salesperson Assigned'] || null)) convertedRecord.deal.properties.sales_person = convertSoldBy(el['Sold by'] || el['Sold by 2'] || el['Salesperson Assigned'] || null);
-        if (convertSource(el['Source'] || el['Source (Energy Matters)'] || el['Source 2'] || null)) convertedRecord.deal.properties.lead_source = convertSource(el['Source'] || el['Source (Energy Matters)'] || el['Source 2'] || null);
+        if (convertSource(el['Source'] || el['Source (Energy Matters)'] || el['Source 2'] || null, el['Lead Reference'])) convertedRecord.deal.properties.lead_source = convertSource(el['Source'] || el['Source (Energy Matters)'] || el['Source 2'] || null, el['Lead Reference']);
         if (convertDateToDatetime(el['Date Sold'] || el['Date Sold 2'] || null)) convertedRecord.deal.properties.sold_date = convertDateToDatetime(el['Date Sold'] || el['Date Sold 2'] || null);
         if (convertDateToDatetime(el['All Leads Date Added'] || el['Added Date (for organic leads)'] || el['Added Date 2'] || el['Date Added'] || null)) convertedRecord.deal.properties.createdate = convertDateToDatetime(el['All Leads Date Added'] || el['Added Date (for organic leads)'] || el['Added Date 2'] || el['Date Added'] || null);
+        else { convertedRecord.deal.properties.createdate = new Date().toString().slice(0,14) };
         if (el['Quote']) {
             if (convertedRecord.dealNotes.properties.attachments) {
                 convertedRecord.dealNotes.properties.attachments = [...convertedRecord.dealNotes.properties.attachments, ...el['Quote']];
@@ -422,7 +423,7 @@ const convertSoldBy = (airtableSoldBy: string): string | undefined => {
     else return undefined;
 }
 
-const convertSource = (airtableSource: string): string | undefined => {
+const convertSource = (airtableSource: string, leadReference: string): string | undefined => {
     if (airtableSource == 'SolarQuotes') return 'Solar QSolar Quotesuotes'; // was originally a typo and now we're stuck with it...
     else if (airtableSource == 'Website') return 'Website';
     else if (airtableSource == 'Referral') return 'Word of Mouth';
@@ -442,9 +443,13 @@ const convertSource = (airtableSource: string): string | undefined => {
     else if (airtableSource == '3Quotes') return 'Other';
     else if (airtableSource == 'Solar Choice') return 'Solar Choice';
     else if (airtableSource == 'JetCharge Customer') return 'Word of Mouth';
-    else if (airtableSource == 'Rob Powerwell') return 'Other';
+    else if (airtableSource == 'Rob Powerwell') return 'Personal connection to Winki';
     else if (airtableSource == 'Ken') return 'Personal connection to Winki';
-    else return undefined;
+    else if (leadReference) {
+        if (leadReference.slice(0,2) == 'SC') return 'Solar Choice';
+        if (leadReference.length == 6 && +leadReference > 0) return 'Solar QSolar Quotesuotes';
+    }
+    else return 'Unknown';
 }
 
 const convertSiteInspectionCompleted = (airtableSiteInspectionCompleted: string): string | undefined => {

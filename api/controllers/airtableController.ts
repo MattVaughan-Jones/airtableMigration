@@ -38,7 +38,7 @@ const getRecords = () => {
         let results: {}[] = [];
 
         base(airtableSalesUpdatedLeadsViewID).select({
-            maxRecords: 80,
+            maxRecords: 4000,
             view: "ALL",
             // pageSize: 2
         }).eachPage(
